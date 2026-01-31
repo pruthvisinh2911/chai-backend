@@ -2,11 +2,19 @@
   "name": "chai-aur-backend-project",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": ""
+    "dev": "nodemon src/index.js"
   },
-  "keywords": ["javascript","backend","chai"],
+  "keywords": [
+    "javascript",
+    "backend",
+    "chai"
+  ],
   "author": "prithvi",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
