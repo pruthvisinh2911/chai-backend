@@ -1,0 +1,12 @@
+{
+  "name": "chai-aur-backend-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "keywords": ["javascript","backend","chai"],
+  "author": "prithvi",
+  "license": "ISC",
+  "description": ""
+}
