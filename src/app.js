@@ -17,7 +17,7 @@ app.use(express.json({
         limit:"20kb",
     }))
 
-    app.use(express.static("public"))
+    app.use(express.static("Public"))
     app.use(cookieParser())
 
 export {app}
