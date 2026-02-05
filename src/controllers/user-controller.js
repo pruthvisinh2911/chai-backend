@@ -23,7 +23,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(409, "User with email or username already exists");
     }
 
-    // ✅ SAFE file access
     const avatarLocalPath = req.files?.avatar?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
