@@ -36,7 +36,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "Avatar upload failed");
     }
 
-    // ✅ Upload cover image only if exists
     let coverImage;
     if (coverImageLocalPath) {
         coverImage = await uploadOnCloudinary(coverImageLocalPath);
