@@ -49,19 +49,17 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-/* 🔐 HASH PASSWORD */
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-/* 🔑 PASSWORD CHECK */
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-/* 🎟️ ACCESS TOKEN */
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
@@ -77,7 +75,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-/* 🔁 REFRESH TOKEN */
+
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
