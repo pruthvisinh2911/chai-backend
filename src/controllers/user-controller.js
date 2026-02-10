@@ -23,10 +23,9 @@ const generateAccessAndRefrshToken = async (userId) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        console.error(error);
         throw new apiError(
             500,
-            "something went wrong while generating refresh and access token"
+            "Something went wrong while generating access and refresh token"
         );
     }
 };
@@ -55,11 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.files?.avatar?.[0]?.path;
 
     let coverImageLocalPath;
-    if (
-        req.files &&
-        Array.isArray(req.files.coverImage) &&
-        req.files.coverImage.length > 0
-    ) {
+    if (req.files?.coverImage?.length > 0) {
         coverImageLocalPath = req.files.coverImage[0].path;
     }
 
@@ -67,21 +62,29 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "Avatar file is required");
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    // ✅ Upload avatar into folder
+    const avatar = await uploadOnCloudinary(
+        avatarLocalPath,
+        "uploads/users/avatars"
+    );
 
-    if (!avatar?.url) {
+    if (!avatar?.secure_url) {
         throw new apiError(400, "Avatar upload failed");
     }
 
+    // ✅ Upload cover image into folder
     let coverImage;
     if (coverImageLocalPath) {
-        coverImage = await uploadOnCloudinary(coverImageLocalPath);
+        coverImage = await uploadOnCloudinary(
+            coverImageLocalPath,
+            "uploads/users/covers"
+        );
     }
 
     const user = await User.create({
         fullname,
-        avatar: avatar.url,
-        coverImage: coverImage?.url || "",
+        avatar: avatar.secure_url,
+        coverImage: coverImage?.secure_url || "",
         email,
         password,
         username: username.toLowerCase(),
@@ -107,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
     if (!(username || email)) {
-        throw new apiError(400, "username or email is required");
+        throw new apiError(400, "Username or email is required");
     }
 
     const user = await User.findOne({
@@ -115,13 +118,13 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        throw new apiError(404, "user does not exist");
+        throw new apiError(404, "User does not exist");
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        throw new apiError(401, "incorrect password");
+        throw new apiError(401, "Incorrect password");
     }
 
     const { accessToken, refreshToken } =
@@ -148,7 +151,7 @@ const loginUser = asyncHandler(async (req, res) => {
                     accessToken,
                     refreshToken,
                 },
-                "user logged in successfully"
+                "User logged in successfully"
             )
         );
 });
@@ -160,9 +163,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined,
-            },
+            $set: { refreshToken: undefined },
         },
         { new: true }
     );
@@ -176,7 +177,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "user logged out"));
+        .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
 export {
