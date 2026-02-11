@@ -4,9 +4,6 @@ import { User } from "../models/user-models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-/**
- * Generate Access & Refresh Token
- */
 const generateAccessAndRefrshToken = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -30,9 +27,7 @@ const generateAccessAndRefrshToken = async (userId) => {
     }
 };
 
-/**
- * Register User
- */
+
 const registerUser = asyncHandler(async (req, res) => {
     const { fullname, email, username, password } = req.body;
 
@@ -62,7 +57,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "Avatar file is required");
     }
 
-    // ✅ Upload avatar into folder
     const avatar = await uploadOnCloudinary(
         avatarLocalPath,
         "uploads/users/avatars"
@@ -72,7 +66,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "Avatar upload failed");
     }
 
-    // ✅ Upload cover image into folder
     let coverImage;
     if (coverImageLocalPath) {
         coverImage = await uploadOnCloudinary(
@@ -103,9 +96,6 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Login User
- */
 const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
@@ -156,9 +146,6 @@ const loginUser = asyncHandler(async (req, res) => {
         );
 });
 
-/**
- * Logout User
- */
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
