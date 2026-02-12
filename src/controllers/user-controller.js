@@ -318,6 +318,16 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
    )
 })
 
+
+const getUserChannelProfile = asyncHandler(async(req,res)=>{
+    const {username} = req.params
+
+    if(!username?.trim())
+    {
+        throw new apiError("user does not exist")
+    }
+})
+
 export {
     registerUser,
     loginUser,
