@@ -324,8 +324,72 @@ const getUserChannelProfile = asyncHandler(async(req,res)=>{
 
     if(!username?.trim())
     {
-        throw new apiError("user does not exist")
+        throw new apiError(400,"user does not exist")
     }
+
+
+   const channel = await User.aggregate([
+{
+    $match:{
+        username:username?.toLowerCase()
+    }
+},
+{
+    $lookup:{
+        from:"Subcription",
+        localField:"_id",
+        foreignField:"channel",
+        as:"subscribers"
+    }
+},
+{
+    $lookup:{
+         from:"Subcription",
+        localField:"_id",
+        foreignField:"subscriber",
+        as:"subscribedTo"
+    }
+},
+{
+        $addFields:{
+            subscriberCount:{
+                $size:"$subscribers"
+            },
+            channelsSubscribedToCount:{
+                $size:"$subscribedTo"
+            },
+            isSubscribed:{
+                $cond:{
+                    if:{
+                        $in:[req.user?._id,"$subscriber"]
+                    },
+                    then:true,
+                    else:false,
+
+                }
+            }
+        }
+},
+{
+    $project:{
+        fullname:1,
+        username:1,
+        subscriberCount:1,
+        channel:1,
+        isSubscribed:1,
+        avatar:1,
+        coverImage:1,
+        email:1,
+    }
+}
+
+   ])
+    if(!channel?.length){
+        throw new apiError(400,"channel does not exist")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,channel[0],"user channel fetched sucessfully"))
 })
 
 export {
